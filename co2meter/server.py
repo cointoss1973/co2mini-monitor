@@ -117,10 +117,16 @@ def get_shape_positions():
 #############################################################################
 @app.route('/kill')
 def shutdown():
-    server_stop()
+    shutdown_server()
     global _monitoring
     _monitoring = False
     return 'Server shutting down...'
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
 
 
 #############################################################################
