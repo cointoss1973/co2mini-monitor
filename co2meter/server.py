@@ -305,25 +305,6 @@ def start_monitor(interval=_DEFAULT_INTERVAL):
     return t
 
 
-#############################################################################
-def init_homekit_target(port, host):
-    try:
-        from .homekit import start_homekit
-    except:
-        from homekit import start_homekit
-
-    global mon
-    while mon is None:
-        time.sleep(5)
-    logging.info('Starting homekit server')
-    start_homekit(mon, host=host, port=port, monitoring=False, handle_sigint=False)
-
-
-def init_homekit(port, host):
-    # We'll start homekit once the device is connected
-    t = threading.Thread(target=init_homekit_target, args=(port, host, ))
-    t.start()
-
 
 #############################################################################
 # Server routines
@@ -333,42 +314,6 @@ def my_ip():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.connect(("8.8.8.8", 80))  # Google Public DNS
         return s.getsockname()[0]
-
-
-def start_server_homekit():
-    """ Start monitoring, flask/dash server and homekit accessory """
-    # Based on http://flask.pocoo.org/snippets/133/
-    try:
-        from .homekit import PORT
-    except:
-        # the case of running not from the installed module
-        from homekit import PORT
-
-    host = my_ip()
-    parser = optparse.OptionParser()
-    parser.add_option("-H", "--host",
-                      help="Hostname of the Flask app [default %s]" % host,
-                      default=host)
-    parser.add_option("-P", "--port-flask",
-                      help="Port for the Flask app [default %s]" % _DEFAULT_PORT,
-                      default=_DEFAULT_PORT)
-    parser.add_option("-K", "--port-homekit",
-                      help="Port for the Homekit accessory [default %s]" % PORT,
-                      default=PORT)
-    parser.add_option("-N", "--name",
-                      help="Name for the log file [default %s]" % _DEFAULT_NAME,
-                      default=_DEFAULT_NAME)
-    options, _ = parser.parse_args()
-
-    global _name
-    _name = options.name
-
-    # Start monitoring
-    t_monitor = start_monitor()
-    # Start a thread that will initialize homekit once device is connected
-    init_homekit(host=options.host, port=int(options.port_homekit))
-    # Start server
-    app.run(host=options.host, port=int(options.port_flask))
 
 
 #############################################################################

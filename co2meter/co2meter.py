@@ -431,16 +431,6 @@ def plot(data, plot_temp=False, ewma_halflife=30., **kwargs):
 #############################################################################
 # Entry points
 #############################################################################
-def start_homekit():
-    from .homekit import start_homekit as start
-    start()
-
-
 def start_server():
     from .server import start_server as start
-    start()
-
-
-def start_server_homekit():
-    from .server import start_server_homekit as start
     start()
