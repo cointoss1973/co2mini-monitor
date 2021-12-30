@@ -18,10 +18,11 @@ from io import StringIO
 import flask
 from flask import request, render_template, jsonify
 import pandas as pd
+import numpy as np
 
 import co2meter as co2
 
-_DEFAULT_HOST = '127.0.0.1'
+_DEFAULT_HOST = '0.0.0.0' #'127.0.0.1'
 _DEFAULT_PORT = '1201'
 _DEFAULT_INTERVAL = 30  # seconds
 _DEFAULT_NAME = 'co2'
@@ -190,8 +191,8 @@ def chart_co2_temp(name=None, freq='24H'):
 
     # Make figure
     index = data.index.format()
-    co2 = list(pd.np.where(data.co2.isnull(), None, data.co2))
-    temp = list(pd.np.where(data.temp.isnull(), None, data.temp))
+    co2 = list(np.where(data.co2.isnull(), None, data.co2))
+    temp = list(np.where(data.temp.isnull(), None, data.temp))
 
     d_co2 = {'mode': 'lines+markers', 'type': 'scatter',
              'name': 'CO2 concentration',
